@@ -2,32 +2,33 @@
 // Created by Mark on 10/12/2019.
 //
 
+#include <stdbool.h>
 #ifndef HAZI_TESZT_MANAGEFILE_H
 #define HAZI_TESZT_MANAGEFILE_H
 
 typedef struct {
     double x, y;
-}point;
+}Point;
 
 typedef struct {
     int num;
     double x, y;
     char name[51];
-}location;
+}Location;
 
 typedef struct{
     int size;
-    location *values;
+    Location *values;
 }Position;
 
 typedef struct{
     int size;
-    point *values;
+    Point *values;
 }Border;
 
-double **readGraph(double **data);
-location* readPosition(int *size);
-point* readBorder(int *sizeB);
+bool readGraph(double **data);
+Location* readPosition(int *size);
+Point* readBorder(int *sizeB);
 
 #endif //HAZI_TESZT_MANAGEFILE_H
 

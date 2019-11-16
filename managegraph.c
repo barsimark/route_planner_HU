@@ -12,16 +12,15 @@
 typedef struct {
     double value;
     int vertex;
-} table;
+} Table;
 /*
  * @param graph with the distances in it
- * @param graphSize the size of the graph
  * @param startPoint of the Dijkstra algorithm
  * @param endPoint of the algorithm
- * @param dist is the overall shortest distance will be placed here
+ * @param dist the overall shortest distance will be placed here
  *
- * @return the vertexes' id during the shortest path in reverse order
- * @return the overall shortest distance between the start and endpoints
+ * @return array containing the vertexes through the shortest way in reversed order. -1 signs the end
+ * @return the overall shortest distance between the start and endpoint
  *
  * @date 2019.11.02.
  */
@@ -34,7 +33,7 @@ int* dijkstraAlgorithm(const Graph graph, int startPoint, int endPoint, double *
      * At first all the distances are unknown, therefore infinite. DBL_MAX signs the infinity.
      * And we don't know the previous vertex either, which is shown by the -1 id
      */
-    table distance[graph.size];
+    Table distance[graph.size];
     for (int i = 0; i < graph.size; ++i) {
         distance[i].value = DBL_MAX;
         distance[i].vertex = -1;
@@ -122,7 +121,7 @@ int* dijkstraAlgorithm(const Graph graph, int startPoint, int endPoint, double *
         pRoute = realloc(pRoute, (routeCount+1) * sizeof(int));
         pRoute[routeCount++] = id;
     }
-    // -1 signs the end of the array
+    // -1 marks the end of the new array
     pRoute = realloc(pRoute, (routeCount+1) * sizeof(int));
     pRoute[routeCount] = -1;
 
@@ -153,8 +152,8 @@ double** initGraph(int size){
      * managefile.c function
      * Fills graph with actual value from szak.txt
      */
-    graph = readGraph(graph);
-    if (graph == NULL){
+    bool correct = readGraph(graph);
+    if (correct == false){
         free(graph[0]);
         free(graph);
         return NULL;

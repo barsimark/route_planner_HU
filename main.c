@@ -14,7 +14,7 @@
 //RGB color code
 typedef struct{
     int red, green, blue;
-}rgb;
+}RGB;
 
 //initialize SDL
 void sdl_init(char const *name, int width, int heigth, SDL_Window **pwindow, SDL_Renderer **prenderer) {
@@ -42,7 +42,7 @@ void sdl_init(char const *name, int width, int heigth, SDL_Window **pwindow, SDL
 /*
  * Decide which vertex is the closest to the user's click
  * @param position is the vertexes' coordinates
- * @param size is the number of vertexes
+ * @param windowY is the height of the window
  * @param x and y are the coordinates of the click
  * @return vertex is the closest one within the given range (eps)
  *
@@ -69,7 +69,7 @@ int vertexFromCoordinates(const Position position, int windowY, int x, int y) {
 /*
  *Write to the SDL window
  *@param renderer is the SDL renderer
- *@param text is shown on the screen
+ *@param text is the text to show on the screen
  *@param x and y are the coordinates of the text's first letter
  *@param size is the size of the letters
  *
@@ -104,6 +104,7 @@ void printTextToSDL(SDL_Renderer *renderer, char *text, int x, int y, int size){
 /*
  *Draws the border to the window
  *@param renderer SDL renderer
+ *@param windowY is the window's height
  *@param border is the structure containing the size and the values
  *
  *@date 2019.11.09.
@@ -129,6 +130,7 @@ void drawMap(SDL_Renderer *renderer, int windowY, const Border border){
 /*
  *Draws the graph to the window
  *@param renderer SDL renderer
+ *@param windowY is the height of the window
  *@param position the position structure with size and location list in it
  *@param graph the graph structure with the 2D array with the connections and the graph's size
  *
@@ -152,6 +154,7 @@ void drawGraph(SDL_Renderer *renderer, int windowY, const Position position, Gra
 /*
  *Draws the vertexes to the window
  *@param renderer SDL renderer
+ *@param windowY is the window's height
  *@param position vertex array
  *
  *@date 2019.11.09.
@@ -211,6 +214,7 @@ void drawUI(SDL_Renderer *renderer, int windowX, int windowY, const Position pos
  *Connects two adjacent vertexes
  *In use when drawing the optimal route on map
  *@param renderer SDL renderer
+ *@param windowY is height of the window
  *@param position is vertex array
  *@param first and second are the points
  *
@@ -228,12 +232,13 @@ void connectTwoPoints(SDL_Renderer *renderer, int windowY, const Position positi
 /*
  *Draws the graph to the window
  *@param renderer SDL renderer
+ *@param windowY
  *@param vertex is the chosen vertex of the graph
  *@param color is either black or red will be the color of the vertex
  *
  *@date 2019.11.09.
 */
-void colorChosenVertex(SDL_Renderer *renderer, int windowY, location vertex, rgb color){
+void colorChosenVertex(SDL_Renderer *renderer, int windowY, Location vertex, RGB color){
     filledCircleRGBA(renderer, vertex.x, windowY-vertex.y, 3, color.red, color.green, color.blue, 255);
     SDL_RenderPresent(renderer);
 }
@@ -257,7 +262,7 @@ int* vertexesChosen(SDL_Renderer *renderer, int windowY, const Position position
             break;
         }
     }
-    rgb color;
+    RGB color;
     if (isInList){
         int *newlist = (int*) malloc((*size-1) * sizeof(int));
         int idx = 0;
@@ -268,12 +273,12 @@ int* vertexesChosen(SDL_Renderer *renderer, int windowY, const Position position
         *size -= 1;
         free(chosenpoints);
         chosenpoints = newlist;
-        color = (rgb) {0, 0, 0};
+        color = (RGB) {0, 0, 0};
     } else{
         chosenpoints = (int*) realloc(chosenpoints, (*size+1) * sizeof(int));
         chosenpoints[*size] = vertex;
         *size += 1;
-        color = (rgb) {255, 0, 0};
+        color = (RGB) {255, 0, 0};
     }
     colorChosenVertex(renderer, windowY, position.values[vertex], color);
 
@@ -286,15 +291,15 @@ int* vertexesChosen(SDL_Renderer *renderer, int windowY, const Position position
  *
  * @date 2019.11.12.
 */
-void displayFirstRoute(SDL_Renderer *renderer, location place){
-    const int startx = 1100;
+void displayFirstRoute(SDL_Renderer *renderer, Location place){
+    const int startx = 1000;
     const int starty = 250;
     const int size = 20;
     printTextToSDL(renderer, "Kezdőpont:", startx, starty, size);
     printTextToSDL(renderer, place.name, startx+100, starty, size);
 }
 
-/* Displays the
+/* Displays the route information
  * @param renderer SDL renderer
  * @param num
  * @param place is the current vertex
@@ -303,16 +308,16 @@ void displayFirstRoute(SDL_Renderer *renderer, location place){
  *
  * @date 2019.11.12.
 */
-void displayRoute(SDL_Renderer *renderer, int num, location place, double distance, char *text){
-    const int startx = 1100;
+void displayRoute(SDL_Renderer *renderer, int num, Location place, double distance, char *text){
+    const int startx = 1000;
     const int starty = 250;
     const int size = 20;
     printTextToSDL(renderer, text, startx, starty + num*(size+10), size);
     printTextToSDL(renderer, place.name, startx+100, starty + num*(size+10), size);
     char distText[10];
     sprintf(distText, "%.2f", distance);
-    printTextToSDL(renderer, distText, startx+300, starty + num*(size+10), size);
-    printTextToSDL(renderer, "km", startx+370, starty + num*(size+10), size);
+    printTextToSDL(renderer, distText, startx+320, starty + num*(size+10), size);
+    printTextToSDL(renderer, "km", startx+390, starty + num*(size+10), size);
 }
 
 
@@ -346,7 +351,7 @@ int main(int argc, char *argv[]) {
 
     SDL_Window *window;
     SDL_Renderer *renderer;
-    sdl_init("Utvonaltervezo", windowX, windowY, &window, &renderer);
+    sdl_init("Utvonaltervezo", windowX, windowY, &window, &renderer); //Route planner
     TTF_Init();
 
     drawUI(renderer, windowX, windowY, position, graph, border);
@@ -398,9 +403,9 @@ int main(int argc, char *argv[]) {
                                 if (i == 1)
                                     displayFirstRoute(renderer, position.values[route[j-1]]);
                                 if (i == numberOfChosen-1)
-                                    displayRoute(renderer, i, position.values[route[0]], distanceSum, "Végpont:");
+                                    displayRoute(renderer, i, position.values[route[0]], distanceSum, "Végpont:"); //Endpoint
                                 else
-                                    displayRoute(renderer, i, position.values[route[0]], distanceSum, "Köztes pont:");
+                                    displayRoute(renderer, i, position.values[route[0]], distanceSum, "Köztes pont:"); //Middle point
                                 free(route);
                             }
                         }

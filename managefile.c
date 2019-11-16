@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "managefile.h"
 //#include "../debugmalloc.h"
 
@@ -22,36 +23,37 @@
 typedef struct {
     int num, first, second;
     double weight;
-}graphData;
+}GraphData;
 
 /* Read from szak.txt file, and fill the graph
  * @param graph is the graph filled with DBL_MAX
  * @return modified graph When there is a connection between two points, the value is the distance between them.
+ *
  * graph[a][b] = graph[b][a]
  *
  * @date 2019.11.01.
  */
-double **readGraph(double **graph){
+bool readGraph(double **graph){
     FILE *fp;
     fp = fopen("szak.txt", "r");
 
     //Error handling
     if (fp == NULL){
         printf("Error with opening the graph");
-        return NULL;
+        return false;
     }
-    graphData temp;
+    GraphData temp;
     while (fscanf(fp, "%d %d %d %lf", &temp.num, &temp.first, &temp.second, &temp.weight) == 4){
         graph[temp.first - 1][temp.second - 1] = temp.weight;
         graph[temp.second - 1][temp.first - 1] = temp.weight;
     }
 
     fclose(fp);
-    return graph;
+    return true;
 }
 
 /*
- * Converts the GPS coordinates to pixels in order to match a 1400x700 screen (actual value: ~1100 x ~700)
+ * Converts the GPS coordinates to pixels in order to match a 1400x700 window (actual value: ~1100 x ~700)
  * @param x and y one point's coordinates
  *
  * @date 2019.11.12.
@@ -73,7 +75,7 @@ void dataManipulation(double *x, double *y){
  *
  * @date 2019.11.01.
  */
-location* readPosition(int *size){
+Location* readPosition(int *size){
     FILE *fp;
     fp = fopen("csp.txt", "r");
 
@@ -83,15 +85,15 @@ location* readPosition(int *size){
         return NULL;
     }
     int len = 0;
-    location* position;
-    position = (location*) malloc(len * sizeof(location));
-    location temp;
+    Location* position;
+    position = (Location*) malloc(len * sizeof(Location));
+    Location temp;
 
     while (fscanf(fp, "%d %s %lf %lf", &temp.num, temp.name, &temp.x, &temp.y) == 4){
         dataManipulation(&temp.x, &temp.y);
         if (temp.num > len){
                 len = temp.num;
-            position = (location*) realloc(position, (len+1) * sizeof(location));
+            position = (Location*) realloc(position, (len+1) * sizeof(Location));
         }
         position[temp.num-1] = temp;
         *size += 1;
@@ -107,7 +109,7 @@ location* readPosition(int *size){
  *
  * @date 2019.11.01.
  */
-point* readBorder(int *sizeB){
+Point* readBorder(int *sizeB){
     FILE *fp;
     fp = fopen("hatar.txt", "r");
 
@@ -116,13 +118,13 @@ point* readBorder(int *sizeB){
         printf("Error with opening the file");
         return NULL;
     }
-    point *borderline;
-    borderline = (point*) malloc(*sizeB * sizeof(point));
-    point temp;
+    Point *borderline;
+    borderline = (Point*) malloc(*sizeB * sizeof(Point));
+    Point temp;
 
     while (fscanf(fp, "%lf %lf", &temp.x, &temp.y) == 2){
         dataManipulation(&temp.x, &temp.y);
-        borderline = realloc(borderline, (*sizeB + 1) * sizeof(point));
+        borderline = (Point*) realloc(borderline, (*sizeB + 1) * sizeof(Point));
         borderline[*sizeB].x = temp.x;
         borderline[*sizeB].y = temp.y;
         *sizeB += 1;
