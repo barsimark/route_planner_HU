@@ -1,13 +1,14 @@
 //
 // Created by Mark on 10/12/2019.
 //
-//Graph management with Dijkstra algorithm
+//Graph management with Dijkstra algorithm, initializing graph
+
+#include <stdlib.h>
+#include <float.h>
 
 #include "managegraph.h"
 #include "managefile.h"
-#include <stdlib.h>
-#include <float.h>
-//#include "../debugmalloc.h"
+#include "../debugmalloc.h"
 
 typedef struct {
     double value;

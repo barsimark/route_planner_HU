@@ -3,8 +3,8 @@
 //
 
 #include <stdbool.h>
-#ifndef HAZI_TESZT_MANAGEFILE_H
-#define HAZI_TESZT_MANAGEFILE_H
+#ifndef MANAGEFILE_H
+#define MANAGEFILE_H
 
 typedef struct {
     double x, y;
@@ -30,6 +30,6 @@ bool readGraph(double **data);
 Location* readPosition(int *size);
 Point* readBorder(int *sizeB);
 
-#endif //HAZI_TESZT_MANAGEFILE_H
+#endif //MANAGEFILE_H
 
 

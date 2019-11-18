@@ -5,10 +5,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdbool.h>
+#include <string.h>
+
 #include "managefile.h"
-//#include "../debugmalloc.h"
+#include "../debugmalloc.h"
 
 /*
  * The content of the three files:
