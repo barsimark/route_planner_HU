@@ -72,7 +72,7 @@ int* dijkstraAlgorithm(const Graph graph, int startPoint, int endPoint, double *
         }
         /*
          * When we have that vertex, we look at the distances from here to all of its neighbours
-         * If that distance is smaller than the known distance, which is in the distance array, we
+         * If that distance is smaller than the known one, which is in the distance array, we
          * update the array with the calculated distance, and the previous vertex with the current one.
          */
         for (int i = 0; i <= graph.size; ++i) {

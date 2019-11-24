@@ -59,7 +59,7 @@ bool readGraph(double **graph){
  *
  * @date 2019.11.12.
 */
-void dataManipulation(double *x, double *y){
+static void dataManipulation(double *x, double *y){
     const int xRed = 418900; //Reduce x coord.
     const int yRed = 36200; //Reduce y coord.
     const double scale = 0.00211; //Squeeze
@@ -70,68 +70,74 @@ void dataManipulation(double *x, double *y){
     *y *= scale;
 }
 
-/* Read from csp.txt file, and put it into a location array
- * @param size is the number of vertexes in the graph, first it's 0 and the function increases it
- * @return position is the location array, with the points x and y coordinates in it
+/* Read from csp.txt file, and put it into the position structure
+ * @param position is the position array which is built here
+ * @return whether the file reading is successful or not
  *
  * @date 2019.11.01.
  */
-Location* readPosition(int *size){
+bool readPosition(Position *position){
     FILE *fp;
     fp = fopen("csp.txt", "r");
 
     //Error handling
     if (fp == NULL){
         printf("Error with opening the file");
-        return NULL;
+        return false;
     }
-    int len = 0;
-    Location* position;
-    position = (Location*) malloc(len * sizeof(Location));
+
+    int maxlen = 0;
+    position->values = (Location*) malloc(0 * sizeof(Location));
     Location temp;
 
     while (fscanf(fp, "%d %s %lf %lf", &temp.num, temp.name, &temp.x, &temp.y) == 4){
         dataManipulation(&temp.x, &temp.y);
-        if (temp.num > len){
-                len = temp.num;
-            position = (Location*) realloc(position, (len+1) * sizeof(Location));
+        if (temp.num > maxlen){
+                maxlen = temp.num;
+            position->values = (Location*) realloc(position->values, maxlen * sizeof(Location));
         }
-        position[temp.num-1] = temp;
-        *size += 1;
+        position->values[temp.num-1] = temp;
     }
+    position->size = maxlen;
 
     fclose(fp);
-    return position;
+    return true;
 }
 
-/* Read from hatar.txt file, and put it into a point array
- * @param sizeB is the size of this file. The function sets this value
- * @return borderline is the point array with the border's points
+/* Read from hatar.txt file, and put it into the border structure
+ * The x and y coordinates are separated into two Sint16 arrays for the drawing function
+ * @param border is the border structure where the data is stored
+ * @param windowY is the height of the window
+ * @return logic variable which is false if the hatar.txt doesn't exist
  *
  * @date 2019.11.01.
  */
-Point* readBorder(int *sizeB){
+bool readBorder(Border *border, const int windowY){
     FILE *fp;
     fp = fopen("hatar.txt", "r");
 
     //Error handling
     if (fp == NULL){
         printf("Error with opening the file");
-        return NULL;
+        return false;
     }
-    Point *borderline;
-    borderline = (Point*) malloc(*sizeB * sizeof(Point));
-    Point temp;
 
-    while (fscanf(fp, "%lf %lf", &temp.x, &temp.y) == 2){
-        dataManipulation(&temp.x, &temp.y);
-        borderline = (Point*) realloc(borderline, (*sizeB + 1) * sizeof(Point));
-        borderline[*sizeB].x = temp.x;
-        borderline[*sizeB].y = temp.y;
-        *sizeB += 1;
+    int num = 0;
+    border->x = (Sint16*) malloc(0 * sizeof(Sint16));
+    border->y = (Sint16*) malloc(0 * sizeof(Sint16));
+    double tempX, tempY;
+
+    while (fscanf(fp, "%lf %lf", &tempX, &tempY) == 2){
+        dataManipulation(&tempX, &tempY);
+        num++;
+        border->x = (Sint16*) realloc(border->x, num * sizeof(Sint16));
+        border->y = (Sint16*) realloc(border->y, num * sizeof(Sint16));
+        border->x[num-1] = (Sint16) tempX;
+        border->y[num-1] = (Sint16) (windowY - tempY);
     }
+    border->size = num;
+
     fclose(fp);
-
-    return borderline;
+    return true;
 }
 

@@ -3,12 +3,10 @@
 //
 
 #include <stdbool.h>
+#include <SDL.h>
+
 #ifndef MANAGEFILE_H
 #define MANAGEFILE_H
-
-typedef struct {
-    double x, y;
-}Point;
 
 typedef struct {
     int num;
@@ -23,12 +21,12 @@ typedef struct{
 
 typedef struct{
     int size;
-    Point *values;
+    Sint16 *x, *y;
 }Border;
 
 bool readGraph(double **data);
-Location* readPosition(int *size);
-Point* readBorder(int *sizeB);
+bool readPosition(Position *position);
+bool readBorder(Border *border, const int windowY);
 
 #endif //MANAGEFILE_H
 

@@ -48,7 +48,8 @@ void freeAll(Graph graph, Position position, Border border){
     free(graph.values[0]);
     free(graph.values);
     free(position.values);
-    free(border.values);
+    free(border.x);
+    free(border.y);
 }
 
 /*
@@ -66,14 +67,17 @@ int main(int argc, char *argv[]) {
     const int windowY = 700;
     const int windowX = 1500;
 
+    //set up SDL
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+    sdl_init("Utvonaltervezo", windowX, windowY, &window, &renderer); //Route planner
+    TTF_Init();
+
     //load data
     Position position;
     Border border;
     Graph graph;
-    position.size = 0;
-    border.size = 0;
-    position.values = readPosition(&position.size);
-    if (position.values == NULL){
+    if (readPosition(&position) == false){
         exit(3);
     }
     graph.size = position.size;
@@ -82,18 +86,12 @@ int main(int argc, char *argv[]) {
         free(position.values);
         exit(4);
     }
-    border.values = readBorder(&border.size);
-    if (border.values == NULL){
+    if (readBorder(&border, windowY) == false){
         free(position.values);
         free(graph.values[0]);
         free(graph.values);
         exit(5);
     }
-
-    SDL_Window *window;
-    SDL_Renderer *renderer;
-    sdl_init("Utvonaltervezo", windowX, windowY, &window, &renderer); //Route planner
-    TTF_Init();
 
     if(drawUI(renderer, windowX, windowY, position, graph, border) == false)
         fatalError(graph, position, border);

@@ -53,7 +53,7 @@ void sdl_init(char const *name, int width, int heigth, SDL_Window **pwindow, SDL
  *
  *@param date 2019.11.09.
 */
-bool printTextToSDL(SDL_Renderer *renderer, char *text, int x, int y, int size){
+static bool printTextToSDL(SDL_Renderer *renderer, char *text, int x, int y, int size){
     TTF_Font *font = TTF_OpenFont("LiberationSerif-Regular.ttf", size);
     if (!font) {
         SDL_Log("Error with opening font! %s\n", TTF_GetError());
@@ -89,22 +89,9 @@ bool printTextToSDL(SDL_Renderer *renderer, char *text, int x, int y, int size){
  *
  *@date 2019.11.09.
 */
-void drawMap(SDL_Renderer *renderer, int windowY, const Border border){
-    Sint16 *listX = (Sint16*) malloc(border.size * sizeof(Sint16));
-    Sint16 *listY = (Sint16*) malloc(border.size * sizeof(Sint16));
-
-    for (int i=0; i<border.size; ++i){
-        double x = border.values[i].x;
-        double y = windowY - (border.values[i].y);
-        listX[i] = (Sint16) x;
-        listY[i] = (Sint16) y;
-    }
-
-    filledPolygonRGBA(renderer, listX, listY, border.size, 255, 255, 255, 255);
-    aapolygonRGBA(renderer, listX, listY, border.size, 0, 0, 0, 255);
-
-    free(listX);
-    free(listY);
+static void drawMap(SDL_Renderer *renderer, int windowY, const Border border){
+    filledPolygonRGBA(renderer, border.x, border.y, border.size, 255, 255, 255, 255);
+    aapolygonRGBA(renderer, border.x, border.y, border.size, 0, 0, 0, 255);
 }
 
 /*
@@ -116,7 +103,7 @@ void drawMap(SDL_Renderer *renderer, int windowY, const Border border){
  *
  *@date 2019.11.09.
 */
-void drawGraph(SDL_Renderer *renderer, int windowY, const Position position, Graph graph){
+static void drawGraph(SDL_Renderer *renderer, int windowY, const Position position, const Graph graph){
     double x1, x2, y1, y2;
     for (int i=0; i<graph.size; ++i){
         for (int j=0; j<graph.size; ++j){
@@ -139,7 +126,7 @@ void drawGraph(SDL_Renderer *renderer, int windowY, const Position position, Gra
  *
  *@date 2019.11.09.
 */
-void drawPoints(SDL_Renderer *renderer, int windowY, const Position position){
+static void drawPoints(SDL_Renderer *renderer, int windowY, const Position position){
     for (int i = 0; i<position.size; ++i){
         double x = position.values[i].x;
         double y = windowY - (position.values[i].y);
@@ -154,7 +141,7 @@ void drawPoints(SDL_Renderer *renderer, int windowY, const Position position){
  *
  *@date 2019.11.09.
 */
-bool drawButtons(SDL_Renderer *renderer){
+static bool drawButtons(SDL_Renderer *renderer){
     Sint16 ButtonX[] = {1200, 1450, 1450, 1200};
     Sint16 newButtonY[] = {100, 100, 150, 150};
     Sint16 planButtonY[] = {170, 170, 220, 220};
@@ -223,7 +210,7 @@ void connectTwoPoints(SDL_Renderer *renderer, int windowY, const Position positi
  *
  *@date 2019.11.09.
 */
-void colorChosenVertex(SDL_Renderer *renderer, int windowY, Location vertex, RGB color){
+static void colorChosenVertex(SDL_Renderer *renderer, int windowY, Location vertex, RGB color){
     filledCircleRGBA(renderer, vertex.x, windowY-vertex.y, 3, color.red, color.green, color.blue, 255);
     SDL_RenderPresent(renderer);
 }
@@ -307,9 +294,9 @@ bool displayRoute(SDL_Renderer *renderer, int num, Location place, double distan
         return false;
     char distText[10];
     sprintf(distText, "%.2f", distance);
-    if(printTextToSDL(renderer, distText, startx+320, starty + num*(size+10), size) == false)
+    if(printTextToSDL(renderer, distText, startx+350, starty + num*(size+10), size) == false)
         return false;
-    if(printTextToSDL(renderer, "km", startx+390, starty + num*(size+10), size) == false)
+    if(printTextToSDL(renderer, "km", startx+420, starty + num*(size+10), size) == false)
         return false;
 
     return true;

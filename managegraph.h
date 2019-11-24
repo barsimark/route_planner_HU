@@ -10,7 +10,7 @@ typedef struct{
     double **values;
 }Graph;
 
-int* dijkstraAlgorithm(Graph graph, int startPoint, int endPoint, double *dist);
+int* dijkstraAlgorithm(const Graph graph, int startPoint, int endPoint, double *dist);
 double** initGraph(int size);
 
 #endif //MANAGEGRAPH_H
