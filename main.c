@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
     Position position;
     Border border;
     Graph graph;
-    if (readPosition(&position) == false){
+    if (!readPosition(&position)){
         exit(3);
     }
     graph.size = position.size;
@@ -86,14 +86,14 @@ int main(int argc, char *argv[]) {
         free(position.values);
         exit(4);
     }
-    if (readBorder(&border, windowY) == false){
+    if (!readBorder(&border, windowY)){
         free(position.values);
         free(graph.values[0]);
         free(graph.values);
         exit(5);
     }
 
-    if(drawUI(renderer, windowX, windowY, position, graph, border) == false)
+    if(!drawUI(renderer, windowX, windowY, position, graph, border))
         fatalError(graph, position, border);
 
     int numberOfChosen = 0;
@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
             if (x >= 1200 && x <= 1450){
                 if (y >= 100 && y <= 150){
                     //New route button is pushed
-                    if(drawUI(renderer, windowX, windowY, position, graph, border) == false)
+                    if(!drawUI(renderer, windowX, windowY, position, graph, border))
                         fatalError(graph, position, border);
                     SDL_RenderPresent(renderer);
                     if (numberOfChosen > 0)
@@ -139,27 +139,27 @@ int main(int argc, char *argv[]) {
                         int *route = NULL;
                         for (int i=1; i<numberOfChosen; ++i){
                             route = dijkstraAlgorithm(graph, chosenpoints[i-1], chosenpoints[i], &distanceCurrent);
-                            if (route != NULL){
+                            if (route != NULL){ //TODO: DIJKSTRA VISSZATÉRÉSE LEHETNE BOOL AKÁR
                                 distanceSum += distanceCurrent;
                                 int j;
                                 for (j=1; route[j] != -1; j++)
                                     connectTwoPoints(renderer, windowY, position, route[j-1], route[j]);
                                 if (i == 1){
-                                    if(displayFirstRoute(renderer, position.values[route[j-1]]) == false){
+                                    if(!displayFirstRoute(renderer, position.values[route[j-1]])){
                                         free(route);
                                         free(chosenpoints);
                                         fatalError(graph, position, border);
                                     }
                                 }
                                 if (i == numberOfChosen-1){
-                                    if(displayRoute(renderer, i, position.values[route[0]], distanceSum, "Végpont:") == false){ //Endpoint
+                                    if(!displayRoute(renderer, i, position.values[route[0]], distanceSum, "Végpont:")){ //Endpoint
                                         free(route);
                                         free(chosenpoints);
                                         fatalError(graph, position, border);
                                     }
                                 }
                                 else{
-                                    if(displayRoute(renderer, i, position.values[route[0]], distanceSum, "Köztes pont:") == false){ //Middle point
+                                    if(!displayRoute(renderer, i, position.values[route[0]], distanceSum, "Köztes pont:")){ //Middle point
                                         free(route);
                                         free(chosenpoints);
                                         fatalError(graph, position, border);

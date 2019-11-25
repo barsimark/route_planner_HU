@@ -1,7 +1,7 @@
 //
 // Created by Mark on 10/12/2019.
 //
-//Graph management with Dijkstra algorithm, initializing graph
+// Graph management with Dijkstra algorithm, initializing graph
 
 #include <stdlib.h>
 #include <float.h>
@@ -52,6 +52,8 @@ int* dijkstraAlgorithm(const Graph graph, int startPoint, int endPoint, double *
     int *pVisited = malloc(0);
     //...and all of them are unvisited
     int *pUnvisited = malloc(graph.size * sizeof(int));
+    if (pUnvisited == NULL)
+        return NULL;
     for (int i = 0; i < graph.size; ++i) {
         pUnvisited[i] = i;
     }
@@ -86,9 +88,20 @@ int* dijkstraAlgorithm(const Graph graph, int startPoint, int endPoint, double *
         }
         //When that's ready we put the current vertex from the unvisited array to the visited one
         sizeVisited++;
-        pVisited = realloc(pVisited, sizeVisited * sizeof(int));
+        int *temp = (int*) realloc(pVisited, sizeVisited * sizeof(int));
+        if (temp == NULL && sizeVisited != 0){
+            free(pVisited);
+            free(pUnvisited);
+            return NULL;
+        }
+        pVisited = temp;
         pVisited[sizeVisited-1] = current;
-        int *pNew = malloc((size-1) * sizeof(int));
+        int *pNew = (int*) malloc((size-1) * sizeof(int));
+        if (pNew == NULL && size != 1){
+            free(pVisited);
+            free(pUnvisited);
+            return NULL;
+        }
         int pNewCount = 0;
         for (int i = 0; i < size; ++i) {
             if (pUnvisited[i] != current)
@@ -110,7 +123,9 @@ int* dijkstraAlgorithm(const Graph graph, int startPoint, int endPoint, double *
      * therefore there is no path between the two.
      */
     int routeCount = 0;
-    int *pRoute = malloc((routeCount+1) * sizeof(int));
+    int *pRoute = (int*) malloc((routeCount+1) * sizeof(int));
+    if (pRoute == NULL)
+        return NULL;
     pRoute[routeCount++] = endPoint;
     int id = endPoint;
     while (id != startPoint){
@@ -119,11 +134,21 @@ int* dijkstraAlgorithm(const Graph graph, int startPoint, int endPoint, double *
             return NULL;
         }
         id = distance[id].vertex;
-        pRoute = realloc(pRoute, (routeCount+1) * sizeof(int));
+        int *temp = (int*) realloc(pRoute, (routeCount+1) * sizeof(int));
+        if (temp == NULL){
+            free(pRoute);
+            return NULL;
+        }
+        pRoute = temp;
         pRoute[routeCount++] = id;
     }
     // -1 marks the end of the new array
-    pRoute = realloc(pRoute, (routeCount+1) * sizeof(int));
+    int *temp = (int*) realloc(pRoute, (routeCount+1) * sizeof(int));
+    if (temp == NULL){
+        free(pRoute);
+        return NULL;
+    }
+    pRoute = temp;
     pRoute[routeCount] = -1;
 
     *dist = distance[endPoint].value;
@@ -139,7 +164,11 @@ int* dijkstraAlgorithm(const Graph graph, int startPoint, int endPoint, double *
 double** initGraph(int size){
     //Create empty 2D array
     double **graph = (double**) malloc(size * sizeof(double*));
+    if (graph == NULL)
+        return NULL;
     graph[0] = (double*) malloc(size * size * sizeof(double));
+    if (graph[0] == NULL)
+        return NULL;
     for (int i = 1; i < size; ++i) {
         graph[i] = graph[0] + i * size;
     }
@@ -153,8 +182,7 @@ double** initGraph(int size){
      * managefile.c function
      * Fills graph with actual value from szak.txt
      */
-    bool correct = readGraph(graph);
-    if (correct == false){
+    if (!readGraph(graph, size)){
         free(graph[0]);
         free(graph);
         return NULL;

@@ -146,16 +146,16 @@ static bool drawButtons(SDL_Renderer *renderer){
     Sint16 newButtonY[] = {100, 100, 150, 150};
     Sint16 planButtonY[] = {170, 170, 220, 220};
 
-    if(printTextToSDL(renderer, "Tervezés", 1270, 175, 32) == false) //Planning
+    if(!printTextToSDL(renderer, "Tervezés", 1270, 175, 32)) //Planning
         return false;
-    if(printTextToSDL(renderer, "Új útvonal", 1260, 105, 32) == false) //New route
+    if(!printTextToSDL(renderer, "Új útvonal", 1260, 105, 32)) //New route
         return false;
-
-    aapolygonRGBA(renderer, ButtonX, newButtonY, 4, 0, 0, 0, 255);
-    aapolygonRGBA(renderer, ButtonX, planButtonY, 4, 0, 0, 0, 255);
 
     filledPolygonRGBA(renderer, ButtonX, newButtonY, 4, 0, 0, 0, 30);
     filledPolygonRGBA(renderer, ButtonX, planButtonY, 4, 0, 0, 0, 30);
+
+    aapolygonRGBA(renderer, ButtonX, newButtonY, 4, 0, 0, 0, 255);
+    aapolygonRGBA(renderer, ButtonX, planButtonY, 4, 0, 0, 0, 255);
     return true;
 }
 
@@ -277,7 +277,7 @@ bool displayFirstRoute(SDL_Renderer *renderer, Location place){
 
 /* Displays the route information
  * @param renderer SDL renderer
- * @param num
+ * @param num is number of line the text will placed
  * @param place is the current vertex
  * @param distance is the distance between the previous and this vertex
  * @param text is whether a middle point or the endpoint

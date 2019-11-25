@@ -34,7 +34,7 @@ typedef struct {
  *
  * @date 2019.11.01.
  */
-bool readGraph(double **graph){
+bool readGraph(double **graph, const int size){
     FILE *fp;
     fp = fopen("szak.txt", "r");
 
@@ -45,8 +45,13 @@ bool readGraph(double **graph){
     }
     GraphData temp;
     while (fscanf(fp, "%d %d %d %lf", &temp.num, &temp.first, &temp.second, &temp.weight) == 4){
-        graph[temp.first - 1][temp.second - 1] = temp.weight;
-        graph[temp.second - 1][temp.first - 1] = temp.weight;
+        if (temp.first <= size && temp.second <= size){
+            graph[temp.first - 1][temp.second - 1] = temp.weight;
+            graph[temp.second - 1][temp.first - 1] = temp.weight;
+        } else{
+            fclose(fp);
+            return false;
+        }
     }
 
     fclose(fp);
@@ -93,8 +98,13 @@ bool readPosition(Position *position){
     while (fscanf(fp, "%d %s %lf %lf", &temp.num, temp.name, &temp.x, &temp.y) == 4){
         dataManipulation(&temp.x, &temp.y);
         if (temp.num > maxlen){
-                maxlen = temp.num;
-            position->values = (Location*) realloc(position->values, maxlen * sizeof(Location));
+            maxlen = temp.num;
+            Location* tempArray = (Location*) realloc(position->values, maxlen * sizeof(Location));
+            if (tempArray == NULL){
+                free(position->values);
+                return false;
+            }
+            position->values = tempArray;
         }
         position->values[temp.num-1] = temp;
     }
@@ -130,8 +140,15 @@ bool readBorder(Border *border, const int windowY){
     while (fscanf(fp, "%lf %lf", &tempX, &tempY) == 2){
         dataManipulation(&tempX, &tempY);
         num++;
-        border->x = (Sint16*) realloc(border->x, num * sizeof(Sint16));
-        border->y = (Sint16*) realloc(border->y, num * sizeof(Sint16));
+        Sint16* tempXArr = (Sint16*) realloc(border->x, num * sizeof(Sint16));
+        Sint16* tempYArr = (Sint16*) realloc(border->y, num * sizeof(Sint16));
+        if (tempXArr == NULL || tempYArr == NULL){
+            free(border->x);
+            free(border->y);
+            return false;
+        }
+        border->x = tempXArr;
+        border->y = tempYArr;
         border->x[num-1] = (Sint16) tempX;
         border->y[num-1] = (Sint16) (windowY - tempY);
     }

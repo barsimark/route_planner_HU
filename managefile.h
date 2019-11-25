@@ -24,7 +24,7 @@ typedef struct{
     Sint16 *x, *y;
 }Border;
 
-bool readGraph(double **data);
+bool readGraph(double **data, const int size);
 bool readPosition(Position *position);
 bool readBorder(Border *border, const int windowY);
 
