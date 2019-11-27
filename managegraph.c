@@ -15,6 +15,8 @@ typedef struct {
     int vertex;
 } Table;
 /*
+ * Shortest path algorithm to get the optimal route between two vertexes of the graph
+ *
  * @param graph with the distances in it
  * @param startPoint of the Dijkstra algorithm
  * @param endPoint of the algorithm
@@ -22,6 +24,9 @@ typedef struct {
  *
  * @return array containing the vertexes through the shortest way in reversed order. -1 signs the end
  * @return the overall shortest distance between the start and endpoint
+ * Not-normal return values:
+ *  - only -1: no connection between the two vertexes
+ *  - NULL: error with malloc / realloc in function
  *
  * @date 2019.11.02.
  */
@@ -131,7 +136,11 @@ int* dijkstraAlgorithm(const Graph graph, int startPoint, int endPoint, double *
     while (id != startPoint){
         if (id == -1){
             free(pRoute);
-            return NULL;
+            int *emptyList = (int*) malloc(sizeof(int));
+            if (emptyList == NULL)
+                return NULL;
+            emptyList[0] = -1;
+            return emptyList;
         }
         id = distance[id].vertex;
         int *temp = (int*) realloc(pRoute, (routeCount+1) * sizeof(int));

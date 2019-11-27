@@ -23,7 +23,7 @@
  * @date 2019.11.03.
  */
 int vertexFromCoordinates(const Position position, int windowY, int x, int y) {
-    const int eps = 5;
+    const int eps = 4;
     int vertex = -1;
     int minDist = INT_MAX;
     for (int i = 0; i < position.size; ++i) {
@@ -59,7 +59,7 @@ void freeAll(Graph graph, Position position, Border border){
 void fatalError(Graph graph, Position position, Border border){
     freeAll(graph, position, border);
     SDL_Quit();
-    exit(6);
+    exit(404);
 }
 
 
@@ -78,19 +78,19 @@ int main(int argc, char *argv[]) {
     Border border;
     Graph graph;
     if (!readPosition(&position)){
-        exit(3);
+        exit(2);
     }
     graph.size = position.size;
     graph.values = initGraph(graph.size);
     if (graph.values == NULL){
         free(position.values);
-        exit(4);
+        exit(3);
     }
     if (!readBorder(&border, windowY)){
         free(position.values);
         free(graph.values[0]);
         free(graph.values);
-        exit(5);
+        exit(4);
     }
 
     if(!drawUI(renderer, windowX, windowY, position, graph, border))
@@ -139,7 +139,11 @@ int main(int argc, char *argv[]) {
                         int *route = NULL;
                         for (int i=1; i<numberOfChosen; ++i){
                             route = dijkstraAlgorithm(graph, chosenpoints[i-1], chosenpoints[i], &distanceCurrent);
-                            if (route != NULL){ //TODO: DIJKSTRA VISSZATÉRÉSE LEHETNE BOOL AKÁR
+                            if (route == NULL){
+                                free(chosenpoints);
+                                fatalError(graph, position, border);
+                            }
+                            if (route[0] != -1){
                                 distanceSum += distanceCurrent;
                                 int j;
                                 for (j=1; route[j] != -1; j++)

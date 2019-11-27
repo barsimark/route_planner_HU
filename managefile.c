@@ -40,7 +40,7 @@ bool readGraph(double **graph, const int size){
 
     //Error handling
     if (fp == NULL){
-        printf("Error with opening the graph");
+        printf("Error with opening file: szak.txt");
         return false;
     }
     GraphData temp;
@@ -87,7 +87,7 @@ bool readPosition(Position *position){
 
     //Error handling
     if (fp == NULL){
-        printf("Error with opening the file");
+        printf("Error with opening file: csp.txt");
         return false;
     }
 
@@ -128,7 +128,7 @@ bool readBorder(Border *border, const int windowY){
 
     //Error handling
     if (fp == NULL){
-        printf("Error with opening the file");
+        printf("Error with opening file: hatar.txt");
         return false;
     }
 
