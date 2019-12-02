@@ -118,7 +118,7 @@ bool readPosition(Position *position){
  * The x and y coordinates are separated into two Sint16 arrays for the drawing function
  * @param border is the border structure where the data is stored
  * @param windowY is the height of the window
- * @return logic variable which is false if the hatar.txt doesn't exist
+ * @return logic variable which is false if the hatar.txt doesn't exist or unable to allocate memory
  *
  * @date 2019.11.01.
  */
